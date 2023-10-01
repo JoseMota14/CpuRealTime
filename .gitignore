@@ -180,3 +180,15 @@ CpuServer/obj/Debug/net5.0/ref/CpuServer.dll
 CpuServer/obj/Debug/net5.0/refint/CpuServer.dll
 CpuServer/obj/Debug/net5.0/staticwebassets/CpuServer.StaticWebAssets.Manifest.cache
 CpuServer/obj/Debug/net5.0/staticwebassets/CpuServer.StaticWebAssets.Pack.cache
+CpuServer/bin/Debug/net5.0/runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll
+CpuServer/bin/Debug/net5.0/runtimes/win/lib/netcoreapp2.0/System.Diagnostics.PerformanceCounter.dll
+CpuServer/bin/Debug/net5.0/System.Security.Cryptography.ProtectedData.dll
+CpuServer/bin/Debug/net5.0/System.Diagnostics.PerformanceCounter.dll
+CpuServer/bin/Debug/net5.0/System.Configuration.ConfigurationManager.dll
+CpuServer/.vs/ProjectEvaluation/cpuserver.projects.v5.2
+CpuServer/.vs/ProjectEvaluation/cpuserver.metadata.v5.2
+CpuServer/.vs/CpuServer/v17/.futdcache.v2
+CpuServer/.vs/CpuServer/FileContentIndex/e9a77516-c12e-4021-8821-071c3c182b37.vsidx
+CpuServer/.vs/CpuServer/FileContentIndex/9329b426-bee9-45f2-a533-ca201de71a94.vsidx
+CpuServer/.vs/CpuServer/FileContentIndex/80be4356-a0b9-4b17-9f7a-efeebacca095.vsidx
+CpuServer/.vs/CpuServer/FileContentIndex/5c2ba20e-bbd4-4366-a2d0-1d4b1af0ba70.vsidx

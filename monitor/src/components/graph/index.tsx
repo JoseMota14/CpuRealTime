@@ -9,6 +9,7 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
+import { useEffect } from "react";
 import { Line } from "react-chartjs-2";
 
 ChartJS.register(
@@ -27,5 +28,9 @@ interface Props {
   data: any;
 }
 export default function Graph({ options, data }: Props) {
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
   return <Line options={options} data={data} />;
 }

@@ -13,6 +13,7 @@ function App() {
       await getCpuInfo();
     };
     obtainData();
+    // eslint-disable-next-line
   }, []);
 
   return <div>{!hub ? <Loading /> : <Monitor></Monitor>}</div>;

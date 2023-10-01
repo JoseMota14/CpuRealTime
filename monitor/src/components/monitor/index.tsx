@@ -9,8 +9,12 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
+import { useMemo } from "react";
 import { Card, Col, Container, ProgressBar, Row } from "react-bootstrap";
+import useCpu from "../../hooks/useCpu";
+import { options } from "../../utils/graphConst";
 import Graph from "../graph";
+import Table from "../table";
 
 ChartJS.register(
   CategoryScale,
@@ -24,61 +28,67 @@ ChartJS.register(
 );
 
 export default function Monitor() {
-  const now = new Date();
-  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000); // 1 hour ago
-  const timeLabels = [];
+  const { percentages, cpu } = useCpu();
 
-  while (oneHourAgo < now) {
-    timeLabels.push(
-      oneHourAgo.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    );
-    oneHourAgo.setTime(oneHourAgo.getTime() + 5 * 60 * 1000); // Add 5 minutes
-  }
-
-  const options = {
-    scales: {
-      x: {
-        type: "category", // Define the x-axis as categorical
-        title: {
-          display: true,
-          text: "Timestamp",
-          font: {
-            size: 14,
-          },
-        },
-      },
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: "Usage %",
-          font: {
-            size: 14,
-          },
-        },
-        ticks: {
-          stepSize: 5, // Customize tick intervals
-        },
-      },
-    },
-  };
-  const data = {
-    labels: timeLabels,
-    datasets: [
-      {
-        label: "Data Set 1",
-        data: [12, 19, 3, 5, 2],
-        backgroundColor: "rgba(75, 192, 192, 0.6)", // Bar color
-        borderColor: "rgba(75, 192, 192, 1)", // Border color
-        borderWidth: 1,
-      },
-    ],
+  const getValues = () => {
+    const values: Number[] = percentages.map((el) => {
+      return el.Percentage;
+    });
+    return values;
   };
 
-  const tableData = [
-    { id: 1, column1: "Row 1, Col 1", column2: "Row 1, Col 2" },
-    { id: 2, column1: "Row 2, Col 1", column2: "Row 2, Col 2" },
-  ];
+  const times = useMemo(() => {
+    const timeLabels: any[] = [];
+    // Calculate and return the times when percentages change
+    const calculateTimes = () => {
+      if (timeLabels.length === 0 && percentages.length > 0) {
+        const times2: any[] = percentages.map((el) => {
+          const dateValue = new Date(
+            new Date().setHours(el.Time.Hour, el.Time.Minute)
+          );
+          const v = dateValue.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          return v;
+        });
+        return times2;
+      }
+      return [];
+    };
+
+    return calculateTimes(); // Calculate times when percentages change
+    // eslint-disable-next-line
+  }, [percentages]); // Re-calculate when percentages change
+
+  const cpuValue = useMemo(() => {
+    const obtainValue = () => {
+      if (percentages.length > 0) {
+        return percentages[percentages.length - 1].Percentage;
+      }
+    };
+    return obtainValue();
+  }, [percentages]);
+
+  const dataBar = useMemo(() => {
+    const values = getValues();
+
+    return {
+      labels: times,
+      datasets: [
+        {
+          label: "Data Set 1",
+          data: values,
+          backgroundColor: "rgba(75, 192, 192, 0.6)", // Bar color
+          borderColor: "rgba(75, 192, 192, 1)", // Border color
+          borderWidth: 1,
+        },
+      ],
+    };
+    // eslint-disable-next-line
+  }, [percentages]);
+
+  const row: string[][] = [["Cores", cpu?.CoreCount?.toString()]];
 
   return (
     <Container fluid style={{ padding: "1%" }}>
@@ -100,7 +110,7 @@ export default function Monitor() {
           >
             <Card.Body>
               <Card.Title>Processor</Card.Title>
-              <ProgressBar now={75} label="75%" />
+              <ProgressBar now={cpuValue} label={`${cpuValue}%`} />
             </Card.Body>
           </Card>
           <Card className="border rounded shadow mt-1">
@@ -133,36 +143,15 @@ export default function Monitor() {
                 <Card className="border rounded shadow">
                   <Card.Body>
                     <Card.Title>Bar Chart</Card.Title>
-                    <Graph data={data} options={options}></Graph>
+                    <Graph data={dataBar} options={options}></Graph>
                   </Card.Body>
                 </Card>
               </Col>
               <Col md={6}>
                 <Card className="border rounded shadow">
                   <Card.Body>
-                    <Card.Title>Bar Chart</Card.Title>
-                    <p>This is some text content.</p>
-                  </Card.Body>
-                </Card>
-                <Card className="border rounded shadow">
-                  <Card.Body>
-                    <Card.Title>Bar Chart</Card.Title>
-                    <table className="table">
-                      <thead>
-                        <tr>
-                          <th>Column 1</th>
-                          <th>Column 2</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {tableData.map((row) => (
-                          <tr key={row.id}>
-                            <td>{row.column1}</td>
-                            <td>{row.column2}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    <Card.Title>Cpu details</Card.Title>
+                    <Table column={["Detail", "Value"]} row={row}></Table>
                   </Card.Body>
                 </Card>
               </Col>

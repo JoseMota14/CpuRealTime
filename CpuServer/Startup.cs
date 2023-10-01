@@ -54,7 +54,6 @@ namespace CpuServer
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API V1");
-                // You can configure more options here if needed.
             });
 
             app.UseEndpoints(endpoints =>

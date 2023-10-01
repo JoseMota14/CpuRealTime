@@ -14,7 +14,7 @@ export interface iCpuContext {
 }
 
 const CpuContext = createContext({} as iCpuContext);
-
+const url: string | undefined = process.env.REACT_APP_API;
 export interface iCpuProvider {
   children: React.ReactNode;
 }
@@ -28,17 +28,27 @@ function CpuProvider({ children }: iCpuProvider) {
     async function createHub() {
       try {
         const connection = new HubConnectionBuilder()
-          .withUrl("https://localhost:44398/cpu")
-          .configureLogging(LogLevel.Information)
+          .withUrl(url!! + "/cpu")
+          .configureLogging(LogLevel.Trace)
           .build();
 
         await connection
           .start()
           .then(() => {
-            connection.on("ReceiveData", (data: CpuUsage) => {
-              console.log(
-                "Connected to streaming hub." + data.Time + data.Percentage
-              );
+            connection.on("ReceiveData", (data: any) => {
+              console.log(data);
+
+              const apiData: CpuUsage = {
+                Percentage: data?.percentage,
+                Time: JSON.parse(data?.time),
+              };
+
+              if (apiData.Time && apiData.Percentage) {
+                setPercentages((prevPercentages) => [
+                  ...prevPercentages,
+                  apiData,
+                ]);
+              }
             });
           })
           .catch((error) => {
@@ -52,10 +62,14 @@ function CpuProvider({ children }: iCpuProvider) {
     createHub();
 
     return () => {
+      if (hub) {
+        hub.stop();
+      }
       setHub(null);
       setCpu({} as Cpu);
       setPercentages([]);
     };
+    // eslint-disable-next-line
   }, []);
 
   const getCpuInfo = async () => {

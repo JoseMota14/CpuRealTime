@@ -2,6 +2,7 @@
 using CpuServer.Services;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Collections.Generic;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
@@ -10,6 +11,8 @@ namespace CpuServer.Hubs
     public class CpuHub : Hub
     {
         private readonly ICpuService _cpuService;
+        private static readonly List<string> ConnectedClients = new List<string>();
+
         public CpuHub(ICpuService cpuService)
         {
             _cpuService = cpuService;
@@ -19,6 +22,7 @@ namespace CpuServer.Hubs
         {
             //await Clients.All.SendAsync("ReceiveData", "Started");
             await base.OnConnectedAsync();
+            ConnectedClients.Add(Context.ConnectionId);
             // Start streaming when a client connects
             await StartStreaming();
         }
@@ -40,14 +44,12 @@ namespace CpuServer.Hubs
                 // Write the data to the channel
                 await Cpus.Instance.AddValue(data);
 
-                // Send the data to all connected clients
                 await Clients.All.SendAsync("ReceiveData", data);
 
                 // Adjust the streaming interval as needed
                 await Task.Delay(TimeSpan.FromMinutes(1));
             }
         }
-
 
         // Used by connection.invoke("Join", {UserConnection} )
         /*public async Task Join(UserConnection info)

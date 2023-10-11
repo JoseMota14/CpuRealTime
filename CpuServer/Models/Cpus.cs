@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -26,6 +27,11 @@ namespace CpuServer.Models
         public void Complete()
         {
             channel.Writer.TryComplete();
+        }
+
+        public void RemoveExpiredTokens()
+        {
+            channel = Channel.CreateUnbounded<CpuUsage>();
         }
     }
 
